@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="jquery-1.11.2.js"></script>
+    <script src="angular.js"></script>
+    <script>
+    function setup(scope){
+        $("input[model]").each(function(){
+            var $this = $(this);
+            var model = $this.attr('model');
+            
+            $this.change(function(){
+                var value = this.value;
+                scope.$apply(function(){
+                    scope[model] = value;
+                });
+            });
+            
+            scope.$watch(model, function(newValue, oldValue){
+                $this.val(newValue);
+            });
+        });
+        
+         $("*[bind]").each(function(){
+            var $this = $(this);
+            var model = $this.attr('bind');
+        
+            scope.$watch(model, function(newValue, oldValue){
+                $this.html(newValue);
+            });
+        });
+        
+        
+        $(":button").each(function(){
+            var $this = $(this);
+            var evtName = $this.attr("clickEvt");
+            $this.click(function(){
+                scope.$apply(function(){
+                    scope[evtName]();
+                });    
+            })
+            
+        });
+        
+    }
+        
+        
+    $(function(){
+        angular.bootstrap(document.body,[]);
+        window.scope = angular.element(document.body).scope();
+        
+        scope.firstName = '';
+        scope.lastName = '';
+        scope.greetMsg = '';
+        scope.greet = function(){
+            scope.greetMsg = "Hi " + scope.firstName + " " + scope.lastName +  ", Have a nice day!";
+        };
+        
+        setup(scope);
+    });
+    </script>
+</head>
+<body>
+    <span>Name :</span>
+    <input type="text" id="txtFirstName" model="firstName">
+    <input type="text" id="txtLastName" model="lastName">
+    <input type="button" value="Greet" id="btnGreet" clickEvt="greet">
+    <div id="divMessage" bind="greetMsg"></div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+     <style>
+    .content{
+        border : 1px solid black;
+        background-color: lightgray;
+        padding : 10px;
+        margin: 10px;
+    }
+    label{
+        display : block;
+    }
+    #divResult{
+        font-size: 28pt;
+        font-weight: bold;
+        color : red;
+    }
+    </style>
+    <script src="jquery-1.11.2.js"></script>
+    <script src="angular.js"></script>
+    <script>
+        
+     String.prototype.toInt = function(){
+        return parseInt(this,10);
+    };
+        
+    function setup(scope){
+        $("input[model]").each(function(){
+            var $this = $(this);
+            var model = $this.attr('model');
+            
+            $this.change(function(){
+                var value = this.value;
+                scope.$apply(function(){
+                    scope[model] = value;
+                });
+            });
+            
+            scope.$watch(model, function(newValue, oldValue){
+                $this.val(newValue);
+            });
+        });
+        
+         $("*[bind]").each(function(){
+            var $this = $(this);
+            var model = $this.attr('bind');
+        
+            scope.$watch(model, function(newValue, oldValue){
+                $this.html(newValue);
+            });
+        });
+        
+        
+        $(":button").each(function(){
+            var $this = $(this);
+            var evtName = $this.attr("clickEvt");
+            $this.click(function(){
+                scope.$apply(function(){
+                    scope[evtName]();
+                });    
+            })
+            
+        });
+        
+    }
+        
+        
+    $(function(){
+        angular.bootstrap(document.body,[]);
+        window.scope = angular.element(document.body).scope();
+        
+        scope.basic = "0";
+        scope.hra = "0";
+        scope.da = "0";
+        scope.tax = "0";
+        scope.salary = "0";
+        scope.calculate = function(){
+            var gross = scope.basic.toInt() + scope.hra.toInt() + scope.da.toInt();
+            var net = (gross * (100-scope.tax.toInt())/100)
+            scope.salary = net;
+        }
+        
+        setup(scope);
+    });
+    </script>
+</head>
+<body>
+    <div class="content" id="calculator2">
+        <div><label for="">Basic :</label><input type="text" name="" id="txtBasic" model="basic"></div>
+        <div><label for="">Hra :</label><input type="text" name="" id="txtHra" model="hra"></div>
+        <div><label for="">Da :</label><input type="text" name="" id="txtDa" model="da"></div>
+        <div>
+            <label for="">Tax %</label>
+            <input type="range" name="" id="rangeTax" min="0" max="30" value="0" model="tax">
+            <span id="spanTax" bind="tax">Tax</span>
+        </div>
+        <div><input type="button" value="Calculate" id="btnCalculate" clickEvt="calculate"></div>
+        <div>
+            <div id="divResult" bind="salary">[Salary]</div>
+        </div>
+    </div>
+</body>
+</html>
