@@ -1,0 +1,30 @@
+localStorage
+============
+
+window.localStorage (object)
+    - key/value store
+    - both key and value should be string
+    
+    apis
+    ====
+    setItem(key,value)
+    getItem(key) //=> value
+    removeItem(key)
+    clear()
+    key(index) //=> key
+    length 
+    
+Persist the bugs in the storage (localStorage) and maintain
+    - new Date().valueOf().toString() - for new keys
+    
+    - use window.JSON.stringify(obj) for converting from object to string
+    - use window.JSON.parse(str) - for converting from string to object
+    
+    
+Assignment - 1
+1. Persist the bugs in the storage and reload them when needed
+
+Assignment - 2
+2. create a filter "trimText" that can be used to limit the number of characters displayed for the bug title (use an "..." to indicate that the title is trimmed if it is trimmed)
+
+3. make the "trimLength" configurable (use your imagination)

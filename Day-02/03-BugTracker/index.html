@@ -3,20 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Bug Tracker</title>
-    <style>
-    h1{
-        border-top : 2px solid blue;
-        border-bottom : 2px solid blue;
-        padding: 10px;
-        background-color: lightblue;
-    }
-    .closed {
-        color : red;
-        text-decoration: line-through;
-        font-weight: bold;
-        font-style: italic;
-    }
-    </style>
+    <link rel="stylesheet" href="styles/style.css">
+
     <!--
     Use Cases
     =========
@@ -29,59 +17,17 @@
     7. Persist bugs in local storag
     8. Persist bugs in the server
     -->
-    <script src="angular.js"></script>
-    <script>
-        var bugTrackerApp = angular.module("bugTrackerApp",[]);
-        bugTrackerApp.run(function($rootScope){
-            $rootScope.version = "1.0";
-            console.log("Bug Tracker App initialized..");
-        });
+    <script src="scripts/vendor/angular.js"></script>
+    <script src="scripts/vendor/moment.js"></script>
 
-        /*Bug Class*/
-        bugTrackerApp.factory('Bug', function(){
-            function Bug(defaults){
-                this.title = defaults.title;
-                this.isClosed = defaults.isClosed;
-                this.createdAt = defaults.createdAt || new Date();
-            }
-            Bug.prototype.toggleStatus = function(){
-                this.isClosed = !this.isClosed;
-            }
-            return Bug;
-        });
-
-        bugTrackerApp.service("bugsCollection", function(Bug){
-            this.list =  [
-                    new Bug({title : "Unable to login", isClosed : false, createdAt : new Date(2015,2,11)}),
-                    new Bug({title : "Server communication fails", isClosed : false, createdAt : new Date(2015,2,15)}),
-                    new Bug({title : "Data not saved", isClosed : false, createdAt : new Date(2015,2,25)})
-                ];
-            this.add = function(newBug){
-                            this.list.push(new Bug({
-                                title : newBug,
-                                isClosed : false
-                            }));
-                        };
-            this.removeClosed = function(){
-                    for(var i=this.list.length-1; i>=0;i--){
-                        var bug = this.list[i];
-                        if (bug.isClosed)
-                            this.list.splice(i,1);
-                    }
-                };
-            this.toggleStatus = function(bug){
-                    bug.toggleStatus();
-                }
-
-        });
-
-
-        bugTrackerApp.controller("bugsController", function($scope, bugsCollection){
-            $scope.bugs = bugsCollection;
-        });
-    </script>
+    <script src="scripts/app/bugsManagement/bugTracker.js"></script>
+    <script src="scripts/app/bugsManagement/controllers/bugsController.js"></script>
+    <script src="scripts/app/bugsManagement/factories/Bug.js"></script>
+    <script src="scripts/app/bugsManagement/services/bugsCollection.js"></script>
+    <script src="scripts/app/bugsManagement/filters/toMoment.js"></script>
+    <script src="scripts/app/bugsManagement/values/momentApi.js"></script>
 </head>
-<body ng-app="bugTrackerApp">
+<body ng-app="bugTracker">
     <h1>Bug Tracker</h1>
     <span>Version : {{version}}</span>
     <hr>
@@ -96,11 +42,11 @@
         <input type="button" value="Add" ng-click="bugs.add(newBug)">
         <input type="button" value="Remove Closed" ng-click="bugs.removeClosed()">
         <ol>
-            <li
-                ng-repeat="bug in bugs.list | filter:{title:searchTerm}"
-                ng-click="bugs.toggleStatus(bug)"
-                ng-class="{closed :bug.isClosed}"
-            >{{bug.title}} - {{bug.createdAt | date:'dd-MM-yyyy'}}</li>
+            <li ng-repeat="bug in bugs.list | filter:{title:searchTerm}">
+                <span  ng-click="bugs.toggleStatus(bug)"
+                    ng-class="{closed :bug.isClosed}">{{bug.title}}</span> -
+                <span class="timeStamp">{{bug.createdAt | toMoment }}</span>
+            </li>
         </ol>
 
     </div>
