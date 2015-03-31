@@ -17,7 +17,6 @@
         font-style: italic;
     }
     </style>
-    <script src="angular.js"></script>
     <!--
     Use Cases
     =========
@@ -30,19 +29,84 @@
     7. Persist bugs in local storag
     8. Persist bugs in the server
     -->
+    <script src="angular.js"></script>
     <script>
+        var bugTrackerApp = angular.module("bugTrackerApp",[]);
+        bugTrackerApp.run(function($rootScope){
+            $rootScope.version = "1.0";
+            console.log("Bug Tracker App initialized..");
+        });
 
+        /*Bug Class*/
+        bugTrackerApp.factory('Bug', function(){
+            function Bug(defaults){
+                this.title = defaults.title;
+                this.isClosed = defaults.isClosed;
+            }
+            Bug.prototype.toggleStatus = function(){
+                this.isClosed = !this.isClosed;
+            }
+            return Bug;
+        });
+
+        bugTrackerApp.factory('dummy', function(){
+            return {
+                name : "magesh",
+                whoAmI : function(){
+                    console.log("I am ", this.name);
+                }
+            }
+        });
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug, dummy){
+            console.log(dummy.whoAmI());
+            $scope.newBug = "";
+            $scope.addNew = function(){
+                $scope.bugs.push(new Bug({
+                    title : $scope.newBug,
+                    isClosed : false
+                }));
+            };
+            $scope.toggleStatus = function(bug){
+                //console.log(bug, " is clicked");
+                //bug.isClosed = !bug.isClosed;
+                bug.toggleStatus();
+            }
+            $scope.removeClosed = function(){
+                for(var i=$scope.bugs.length-1; i>=0;i--){
+                    var bug = $scope.bugs[i];
+                    if (bug.isClosed)
+                        $scope.bugs.splice(i,1);
+                }
+            }
+            $scope.bugs = [
+                new Bug({title : "Unable to login", isClosed : false}),
+                new Bug({title : "Server communication fails", isClosed : false}),
+                new Bug({title : "Data not saved", isClosed : false})
+            ];
+        });
     </script>
 </head>
-<body>
+<body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
+    <span>Version : {{version}}</span>
     <hr>
-    <div class="content">
+    <div class="content" ng-controller="bugsController">
+        <div>
+            Bugs # : {{bugs.length}}
+        </div>
         <span>Bug :</span>
-        <input type="text" name="" id="">
-        <input type="button" value="Add">
-        <input type="button" value="Remove Closed">
-        <ol></ol>
+        <input type="text" ng-model="newBug" >
+        <input type="button" value="Add" ng-click="addNew()">
+        <input type="button" value="Remove Closed" ng-click="removeClosed()">
+        <ol>
+            <li
+                ng-repeat="bug in bugs"
+                ng-click="toggleStatus(bug)"
+                ng-class="{closed :bug.isClosed}"
+            >{{bug}}</li>
+        </ol>
+
     </div>
 </body>
 </html>
