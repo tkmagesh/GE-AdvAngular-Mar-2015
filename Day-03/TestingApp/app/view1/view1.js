@@ -9,10 +9,15 @@ angular.module('myApp.view1', ['ngRoute'])
   });
 }])
 
-.controller('greetController', function($scope) {
+.service("greeter", function(){
+    this.greet = function(name){
+        return "Hi " + name + ", Have a nice day!"
+    }
+})
+.controller('greetController', function($scope, greeter) {
     $scope.name = '';
     $scope.greetMsg = '';
     $scope.greet = function(){
-        $scope.greetMsg = "Hi " + $scope.name + ", Have a nice day!";
+        $scope.greetMsg = greeter.greet($scope.name);
     }
 });

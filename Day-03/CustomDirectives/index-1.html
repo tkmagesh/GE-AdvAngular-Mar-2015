@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Directive</title>
+    <script src="angular.js"></script>
+    <script>
+    angular.module("myApp",[])
+        .run(function($rootScope){
+            $rootScope.msg = 'This message is from root scope';
+            $rootScope.setMessage = function(msg){
+                $rootScope.msg = msg;
+            };
+            $rootScope.clearMessage = function(){
+                console.log("clear message invoked");
+            }
+        })
+        .directive("clickTracker", function(){
+            return {
+                restrict : 'EA',
+                scope : {
+                    displayMsg : "=",
+                    anotherMsg : "@",
+                    evt : "&"
+                },
+                
+                link : function(scope, elem, attrs){
+                    console.log(scope.anotherMsg);
+                    elem.bind("click", function(){
+                        scope.$apply(function(){
+                            scope.evt();
+                            
+                        });
+                    });
+                }
+            }
+        })
+        .directive("clearOnClick", function(){
+            return function(scope, elem){
+                elem.bind("click", function(){
+                    scope.$apply(function(){
+                        scope.msg = ""  ;  
+                    });
+                });
+            };
+        });
+    </script>
+</head>
+<body ng-app="myApp">
+    <click-tracker display-msg="msg" another-msg="{{msg}}" evt="clearMessage()">This is a click tracker</click-tracker>
+    <div clear-on-click>{{msg}}</div>
+</body>
+</html>

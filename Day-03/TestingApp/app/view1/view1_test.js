@@ -4,12 +4,34 @@ describe('myApp.view1 module', function() {
 
   beforeEach(module('myApp.view1'));
 
-  describe('view1 controller', function(){
+  describe('greetController', function(){
 
-    it('should ....', inject(function($controller) {
+    it('should initialize an empty name', inject(function($controller) {
       //spec body
-      var view1Ctrl = $controller('View1Ctrl');
-      expect(view1Ctrl).toBeDefined();
+      var fakeScope = {};
+      var fakeGreeter = {
+          greet : function(){}
+      };
+      var greetController = $controller('greetController', {$scope : fakeScope, greeter : fakeGreeter});
+      expect(greetController).toBeDefined();
+      expect(fakeScope.name).toBe('');
+    }));
+      
+    
+    it('should call greeter.greet() on greet', inject(function($controller) {
+      //spec body
+      var fakeScope = {};
+      var fakeGreeter = {
+          greet : function(){}
+      };
+      var fakeGreetMsg = "You are a good controller";
+      spyOn(fakeGreeter,"greet").andReturn(fakeGreetMsg);
+        
+      var greetController = $controller('greetController', {$scope : fakeScope, greeter : fakeGreeter});
+      fakeScope.name = "Magesh";
+      fakeScope.greet();
+      expect(fakeGreeter.greet).toHaveBeenCalledWith(fakeScope.name);
+      expect(fakeScope.greetMsg).toBe(fakeGreetMsg);
     }));
 
   });
