@@ -1,0 +1,28 @@
+{
+  "bugs": [
+    {
+      "id": 1,
+      "title": "Unable to login using wrong password",
+      "isClosed": false,
+      "createdAt": "2015-03-27T06:19:55.045Z"
+    },
+    {
+      "id": 2,
+      "title": "Server communication fails",
+      "isClosed": true,
+      "createdAt": "2015-03-27T02:19:55.045Z"
+    },
+    {
+      "id": 3,
+      "title": "Applications shutsdown frequently",
+      "isClosed": false,
+      "createdAt": "2015-03-27T01:19:55.045Z"
+    },
+    {
+      "id": 4,
+      "title": "Reports are not working",
+      "isClosed": false,
+      "createdAt": "2015-03-27T03:19:55.045Z"
+    }
+  ]
+}
