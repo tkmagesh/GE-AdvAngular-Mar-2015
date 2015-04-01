@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing Demo</title>
+    <script src="scripts/angular.js"></script>
+    <script src="scripts/angular-route.js"></script>
+    <script>
+    angular
+        .module("routingApp",["ngRoute"])
+        .provider("dataStore", function(){
+            var userStoreChoice = null;
+            return {
+                setStore : function(store){
+                    userStoreChoice = store;
+                },
+                $get : function(){
+                    return {
+                        getAll : function(){
+                            console.log("getting data from ", userStoreChoice);
+                        }
+                    }
+                }
+            }
+        })
+        .config(function($routeProvider, $locationProvider, dataStoreProvider){
+            /*$locationProvider.hashPrefix('!');
+            $locationProvider.html5Mode({
+              enabled: true,
+              requireBase: false
+            });*/
+            dataStoreProvider.setStore("Session Storage");
+            $routeProvider
+                .when("/products/:productId", {
+                    templateUrl : "products.template.html",
+                    controller : "productsController"
+                })
+                .when("/customers/:customerId",{
+                    templateUrl : "customers.template.html",
+                    controller : "customersController"
+                })
+                .when("/products",{
+                    template : "<h1>Products List</h1>"
+                })
+                .otherwise({
+                    redirectTo : "/products"
+                });
+
+        })
+        .controller("productsController", function($routeParams, $scope){
+            $scope.msg = "Product info about product " + $routeParams.productId + " will be displayed here";
+        })
+        .controller("customersController", function($routeParams, $scope){
+            $scope.msg = "Customer info about customer " + $routeParams.customerId + " will be displayed here";
+        })
+        .run(function(dataStore){
+            console.log(dataStore);
+            console.log(dataStore.getAll());
+        });
+    </script>
+</head>
+<body ng-app="routingApp">
+    <h1>Routing Demo</h1>
+    <ng-view></ng-view>
+</body>
+</html>
