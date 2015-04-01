@@ -1,10 +1,38 @@
 angular.module("bugTracker")
-    .service("bugsCollection", function(Bug){
-            this.list =  [
-                    new Bug({title : "Unable to login", isClosed : false, createdAt : new Date(2015,2,11)}),
-                    new Bug({title : "Server communication fails", isClosed : false, createdAt : new Date(2015,2,15)}),
-                    new Bug({title : "Data not saved", isClosed : false, createdAt : new Date(2015,2,25)})
-                ];
+    .service("bugService", function($http, Bug, $q){
+        this.getAll = function(){
+            var defered = $q.defer();
+            $http
+                .get("http://localhost:3000/bugs")
+                .then(function(response){
+                    defered.resolve(response.data);
+                })
+            return defered.promise;
+        }
+    })
+    .service("bugDataTransformer", function(Bug, $timeout, $q){
+        this.transform = function(bugsData){
+
+            var defered = $q.defer();
+            $timeout(function(){
+                var result = bugsData.map(function(d){ return new Bug(d); });
+                defered.resolve(result);
+            }, 3000);
+            return defered.promise;
+        }
+    })
+    .service("bugsCollection", function(Bug, bugService, bugDataTransformer){
+            this.list =  [];
+            var self = this;
+            bugService
+                .getAll()
+                .then(function(bugsData){
+                    return bugDataTransformer.transform(bugsData)
+                })
+                .then(function(bugs){
+                    self.list = bugs;
+                });
+
             this.add = function(newBug){
                             this.list.push(new Bug({
                                 title : newBug,

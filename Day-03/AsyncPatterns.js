@@ -58,3 +58,16 @@ function addAsyncUsingEventsClient(x,y){
         console.log("result = ", result);
     });
 }
+
+/* Async - 3 (using Promise) */
+
+function addAsyncUsingPromise(x,y){
+    var promise = new Promise(function(resolve, y){
+        setTimeout(function(){
+            console.log("returning result");
+            var result = x + y;
+            resolve(result);
+        },3000);
+    });
+    return promise;
+}
