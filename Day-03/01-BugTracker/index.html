@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Tracker</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <style>
+    .stats{
+        border : 2px solid black;
+        padding : 10px;
+        font-size: 20pt;
+        width: 70px;
+        margin-bottom: 5px
+    }
+    </style>
+    <!--
+    Use Cases
+    =========
+    1. Display list of bugs
+    2. Add a new bug
+    3. Toggle a bug as closed
+    4. Remove the closed bugs
+    5. Display stats
+    6. Display "created time"
+    7. Persist bugs in local storag
+    8. Persist bugs in the server
+    -->
+    <script src="scripts/vendor/angular.js"></script>
+    <script src="scripts/vendor/moment.js"></script>
+
+    <script src="scripts/app/bugsManagement/bugTracker.js"></script>
+    <script src="scripts/app/bugsManagement/controllers/bugsController.js"></script>
+    <script src="scripts/app/bugsManagement/factories/Bug.js"></script>
+    <script src="scripts/app/bugsManagement/services/bugsCollection.js"></script>
+    <script src="scripts/app/bugsManagement/filters/toMoment.js"></script>
+    <script src="scripts/app/bugsManagement/values/momentApi.js"></script>
+    <script src="scripts/app/utils/utils.js"></script>
+
+    <script>
+        angular.module("bugTracker")
+            .filter("completedCount", function(){
+                return function(bugs){
+                    var completedBugs = bugs.filter(function(bug){
+                        return bug.isClosed;
+                    });
+                    return completedBugs.length;
+                }
+        });
+    </script>
+</head>
+<body ng-app="bugTracker">
+    <h1>Bug Tracker</h1>
+    <div class="content" ng-controller="bugsController">
+       <div class="stats">
+           <!--<span class="closed">
+               {{bugs.list | completedCount}}
+            </span> -->
+            <span class="closed">
+                {{ (bugs.list | filter:{isClosed : true}).length }}
+            </span>
+            /
+            <span>{{bugs.list.length}}</span>
+       </div>
+
+        <div>
+            <label for="">Search :</label>
+            <input type="text"  ng-model="searchTerm">
+        </div>
+        <hr>
+        <span>Bug :</span>
+        <input type="text" ng-model="newBug" >
+        <input type="button" value="Add" ng-click="bugs.add(newBug)">
+        <input type="button" value="Remove Closed" ng-click="bugs.removeClosed()">
+        <ol>
+            <li ng-repeat="bug in bugs.list | filter:{title:searchTerm}">
+                <span  ng-click="bugs.toggleStatus(bug)"
+                    ng-class="{closed :bug.isClosed}">{{bug.title | trimText:15}}</span> -
+                <span class="timeStamp">{{bug.createdAt | toMoment }}</span>
+            </li>
+        </ol>
+
+    </div>
+</body>
+</html>
